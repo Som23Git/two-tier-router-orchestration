@@ -141,8 +141,15 @@ steps:
                 Return only the merchant or payee name in this message, or the word none.
                 Message: {{ inputs.text }}
               temperature: 0
+          # No amount in the message: ask for it instead of saving a zero.
+          - name: no_amount_answer
+            type: data.set
+            if: "not steps.amount.output.value : *"
+            with:
+              answer: "I could not find an amount in that message. Try something like: paid 12.50 for lunch at Chipotle."
           - name: save_expense
             type: elasticsearch.index
+            if: "steps.amount.output.value : *"
             with:
               index: "{{ consts.expensesIndex }}"
               refresh: "wait_for"
@@ -156,6 +163,7 @@ steps:
                 source: router
           - name: index_answer
             type: data.set
+            if: "steps.amount.output.value : *"
             with:
               answer: "Saved {{ steps.amount.output.value }} USD at {{ steps.merchant.output.content | default: 'unknown' | strip }} under {{ variables.category }}."
       - match: search

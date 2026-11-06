@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-Tier Finance Router</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --raised: #ffffff;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6f6e69;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #6250d6;
+  --track: #cde2fb; --good: #006300; --warn: #8a5a00;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --raised: #222221;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9890;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+    --track: #184f95; --good: #0ca30c; --warn: #fab219;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --raised: #222221;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9890;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #9085e9;
+  --track: #184f95; --good: #0ca30c; --warn: #fab219;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--grid); flex-wrap: wrap; }
+header h1 { font-size: 19px; margin: 0; font-weight: 650; }
+header .sub { color: var(--muted); font-size: 14px; }
+nav { display: flex; gap: 4px; margin-left: auto; }
+nav button, .btn, select, input, textarea {
+  font: inherit; color: var(--ink); background: var(--raised); border: 1px solid var(--ring); border-radius: 8px; padding: 7px 12px;
+}
+nav button { border: none; background: transparent; color: var(--ink-2); }
+nav button[aria-selected="true"] { background: var(--raised); color: var(--ink); box-shadow: 0 0 0 1px var(--ring); }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+main { max-width: 1240px; margin: 0 auto; padding: 20px 16px 48px; }
+.tab { display: none; } .tab.on { display: block; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; }
+@media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+.card h2 { font-size: 17px; margin: 0 0 4px; font-weight: 600; }
+.muted { color: var(--muted); font-size: 14px; }
+.thread { display: flex; flex-direction: column; gap: 14px; min-height: 360px; max-height: 62vh; overflow: auto; padding: 4px 2px 8px; }
+.msg-user { align-self: flex-end; background: var(--s1); color: #fff; border-radius: 14px 14px 4px 14px; padding: 9px 14px; max-width: 80%; }
+.msg-bot { align-self: flex-start; background: var(--raised); border: 1px solid var(--ring); border-radius: 14px 14px 14px 4px; padding: 12px 14px; max-width: 92%; width: 100%; }
+.msg-bot .answer { font-size: 17px; margin-bottom: 8px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--ring); margin: 0 6px 6px 0; color: var(--ink-2); }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.labels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 6px 0 8px; }
+@media (max-width: 640px) { .labels { grid-template-columns: 1fr; } }
+.lab { font-size: 13px; color: var(--ink-2); }
+.lab b { color: var(--ink); font-weight: 600; display: block; font-size: 14px; }
+.meter { height: 6px; border-radius: 3px; background: var(--track); margin-top: 4px; position: relative; overflow: hidden; }
+.meter span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--s1); border-radius: 3px; }
+.meta { font-size: 13px; color: var(--muted); }
+.meta a { color: var(--s1); }
+.composer { display: flex; gap: 8px; margin-top: 12px; }
+.composer input { flex: 1; font-size: 16px; padding: 10px 14px; }
+.btn-primary { background: var(--s1); color: #fff; border: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--ring); background: transparent; color: var(--ink-2); }
+.chip:hover { color: var(--ink); border-color: var(--axis); }
+.slider { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+.slider input { flex: 1; min-width: 160px; padding: 0; }
+.stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--grid); font-size: 14px; color: var(--ink-2); }
+.stat b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.big { font-size: 34px; font-weight: 650; line-height: 1.1; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--grid); }
+th { color: var(--ink-2); font-weight: 600; font-size: 13px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 20px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; margin-bottom: 20px; }
+svg text { fill: var(--ink-2); font-size: 13px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+svg .val { fill: var(--ink); font-weight: 600; }
+.card-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.table-view { display: none; } .show-table .chart { display: none; } .show-table .table-view { display: block; }
+#tip { position: fixed; pointer-events: none; z-index: 20; background: var(--raised); border: 1px solid var(--ring); border-radius: 8px; padding: 6px 9px; font-size: 13px; display: none; }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+.flow .step { border: 1px solid var(--ring); border-radius: 12px; padding: 14px; background: var(--raised); }
+.flow .step b { display: block; margin-bottom: 4px; }
+.flow .step.t1 { border-color: var(--s3); } .flow .step.t2 { border-color: var(--s2); }
+.thinking { color: var(--muted); font-size: 14px; }
+.err { color: var(--warn); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Two-tier finance router</h1>
+    <div class="sub">Laya decides. An LLM helps only when Laya is unsure. Elastic Workflows routes, Elasticsearch answers.</div>
+  </div>
+  <nav role="tablist">
+    <button role="tab" aria-selected="true" data-tab="try">Try it</button>
+    <button role="tab" aria-selected="false" data-tab="bench">Benchmark</button>
+    <button role="tab" aria-selected="false" data-tab="how">How it works</button>
+    <button id="theme" title="Light or dark">Light</button>
+  </nav>
+</header>
+<div id="tip" role="tooltip"></div>
+<main>
+  <!-- Try it -->
+  <section class="tab on" id="tab-try">
+    <div class="layout">
+      <div class="card">
+        <h2>Talk to your expenses</h2>
+        <p class="muted">Record a payment ("paid $12 for lunch at Chipotle") or ask about past spending ("what did I spend on coffee last month?"). Each reply shows who decided and what it cost.</p>
+        <div class="thread" id="thread" aria-live="polite"></div>
+        <form class="composer" id="form">
+          <input id="text" autocomplete="off" placeholder="Type a message" aria-label="Message">
+          <button class="btn btn-primary" id="send">Send</button>
+        </form>
+        <div class="chips" id="chips"></div>
+        <div class="slider">
+          <label for="minp">Laya decides alone when every needed answer is at least</label>
+          <input type="range" id="minp" min="0.3" max="0.95" step="0.05">
+          <b id="minp-v"></b>
+        </div>
+      </div>
+      <aside>
+        <div class="card">
+          <h2>This session</h2>
+          <div class="stat"><span>Messages</span><b id="s-n">0</b></div>
+          <div class="stat"><span>Decided by Laya alone</span><b id="s-laya">0</b></div>
+          <div class="stat"><span>LLM calls</span><b id="s-llm">0</b></div>
+          <div class="stat"><span>Estimated cost per 1,000 messages like these</span><b id="s-cost">-</b></div>
+          <div class="stat"><span>Same, classifying everything with Haiku</span><b id="s-haiku">-</b></div>
+          <div class="stat"><span>Same, classifying everything with Sonnet</span><b id="s-sonnet">-</b></div>
+          <p class="muted" style="margin:10px 0 0">Costs use OpenRouter list prices and the benchmark's Laya rate. They are estimates per message, scaled to 1,000.</p>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h2>Recently saved expenses</h2>
+          <table id="recent"><tbody><tr><td class="muted">None yet</td></tr></tbody></table>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Benchmark -->
+  <section class="tab" id="tab-bench">
+    <p class="muted" id="bench-source"></p>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="card" id="c-acc"></div>
+      <div class="card" id="c-cost"></div>
+    </div>
+    <div class="card" style="margin-top:20px" id="c-table"></div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="card" id="c-router"></div>
+      <div class="card" id="c-notes"></div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="tab" id="tab-how">
+    <div class="card">
+      <h2>What happens when you press Send</h2>
+      <p class="muted">This page calls the <code>finance-router</code> workflow in Kibana. Every step below is a step in that workflow.</p>
+      <div class="flow" style="margin-top:14px">
+        <div class="step t1"><b>1. Laya decides</b>An open-source, non-generative model answers three questions: intent, category and time period, each with probabilities. No text is generated.</div>
+        <div class="step"><b>2. Confidence check</b>If Laya's probability for every answer the message needs is above the threshold, its labels are used as they are.</div>
+        <div class="step t2"><b>3. LLM only if needed</b>Otherwise Claude Haiku 5.5 classifies the message. Saving an expense also asks it for the merchant name, which Laya cannot copy.</div>
+        <div class="step"><b>4. Act</b>Index: the expense is saved to Elasticsearch. Search: a templated ES|QL query computes the total; no model writes the query.</div>
+        <div class="step"><b>5. Log</b>Every decision goes to the <code>router-log</code> index, so the routing itself can be analyzed.</div>
+      </div>
+      <p class="muted" style="margin-top:16px">Open any reply's "Open in Kibana" link to see the execution step by step.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const human = v => v == null ? "-" : String(v).replace(/_/g, " ");
+const money = v => v == null ? "-" : "$" + (v >= 100 ? v.toFixed(0) : v >= 1 ? v.toFixed(2) : v.toFixed(3));
+let CONFIG = {}, session = { n: 0, laya: 0, llm: 0, cost: 0, haiku: 0, sonnet: 0 };
+
+// ---------------------------------------------------------------- tabs and theme
+document.querySelectorAll("nav [data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav [data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-" + b.dataset.tab));
+  if (b.dataset.tab === "bench") loadBenchmark();
+});
+function setTheme(t) { document.documentElement.dataset.theme = t; $("theme").textContent = t === "dark" ? "Light" : "Dark"; try { localStorage.setItem("router-theme", t); } catch (e) {} }
+$("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+try { const t = localStorage.getItem("router-theme"); if (t) setTheme(t); } catch (e) {}
+
+// ---------------------------------------------------------------- chat
+const EXAMPLES = ["I paid $1,000 for coffee at Starbucks", "Uber home from the airport, 48.30", "what did I spend last month?",
+  "how much did I spend on groceries this month?", "remind me to pay rent on Friday", "show my transport costs this year"];
+$("chips").innerHTML = EXAMPLES.map(e => `<button class="chip" type="button">${esc(e)}</button>`).join("");
+$("chips").querySelectorAll(".chip").forEach(c => c.onclick = () => { $("text").value = c.textContent; $("text").focus(); });
+$("minp").oninput = () => $("minp-v").textContent = Number($("minp").value).toFixed(2);
+
+function addUser(text) { const d = document.createElement("div"); d.className = "msg-user"; d.textContent = text; $("thread").appendChild(d); }
+function addBot(html) { const d = document.createElement("div"); d.className = "msg-bot"; d.innerHTML = html; $("thread").appendChild(d); $("thread").scrollTop = 1e9; return d; }
+
+function botHtml(r) {
+  if (r.status !== "completed") return `<div class="answer err">The workflow ${esc(r.status)}${r.error ? ": " + esc(r.error) : ""}.</div><div class="meta"><a href="${r.kibana_link}" target="_blank" rel="noopener">Open in Kibana</a></div>`;
+  const byLaya = r.decided_by === "laya";
+  const lowest = Math.min(...["intent", "category", "period"].map(q => (r.laya[q] || {}).probability ?? 1));
+  const badge = byLaya
+    ? `<span class="badge"><span class="dot" style="background:var(--s3)"></span>Decided by Laya</span>`
+    : `<span class="badge"><span class="dot" style="background:var(--s2)"></span>Laya unsure, LLM decided (${esc(CONFIG.fallback_model || "Haiku")})</span>`;
+  const labs = ["intent", "category", "period"].map(q => {
+    const l = r.laya[q] || {}; const p = l.probability;
+    const final = r.labels[q];
+    const agree = final === l.choice;
+    return `<div class="lab">${q}<b>${esc(human(final))}</b>Laya: ${esc(human(l.choice))} ${p != null ? "(" + p.toFixed(2) + ")" : ""}${agree ? "" : " differs"}
+      <div class="meter" aria-hidden="true"><span style="width:${Math.round((p || 0) * 100)}%"></span></div></div>`;
+  }).join("");
+  const calls = r.llm_calls.length
+    ? r.llm_calls.map(c => `LLM to ${esc(c.purpose)}: ${c.input_tokens} in / ${c.output_tokens} out tokens, ${(c.ms / 1000).toFixed(1)} s`).join("<br>")
+    : "No LLM call.";
+  return `<div class="answer">${esc(r.answer || "(no answer)")}</div>
+    ${badge}<span class="badge">threshold ${r.min_probability.toFixed(2)}</span><span class="badge">${(r.timings_ms.total / 1000).toFixed(1)} s total, Laya ${((r.timings_ms.laya || 0) / 1000).toFixed(1)} s</span>
+    <div class="labels">${labs}</div>
+    <div class="meta">${calls}<br>Estimated cost: ${money(r.cost_usd * 1000)} per 1,000 messages like this one.
+    <a href="${r.kibana_link}" target="_blank" rel="noopener">Open in Kibana</a></div>`;
+}
+
+function updateSession(r) {
+  if (r.status !== "completed") return;
+  session.n++; if (r.decided_by === "laya") session.laya++; session.llm += r.llm_calls.length;
+  session.cost += r.cost_usd || 0;
+  // Baselines: the same message classified by an LLM, plus the same merchant extraction call.
+  const extract = r.llm_calls.filter(c => c.purpose.startsWith("extract")).reduce((s, c) => s + c.cost_usd, 0);
+  session.haiku += (r.baselines_usd.haiku || 0) + extract;
+  session.sonnet += (r.baselines_usd.sonnet || 0) + extract;
+  $("s-n").textContent = session.n;
+  $("s-laya").textContent = `${session.laya} (${Math.round(100 * session.laya / session.n)}%)`;
+  $("s-llm").textContent = session.llm;
+  $("s-cost").textContent = money(1000 * session.cost / session.n);
+  $("s-haiku").textContent = money(1000 * session.haiku / session.n);
+  $("s-sonnet").textContent = money(1000 * session.sonnet / session.n);
+}
+
+async function loadRecent() {
+  try {
+    const r = await (await fetch("/api/recent")).json();
+    $("recent").innerHTML = r.expenses.length
+      ? "<thead><tr><th>Merchant</th><th>Category</th><th class='num'>Amount</th></tr></thead><tbody>" +
+        r.expenses.map(e => `<tr><td>${esc(e.merchant)}</td><td>${esc(e.category)}</td><td class="num">${Number(e.amount).toFixed(2)}</td></tr>`).join("") + "</tbody>"
+      : "<tbody><tr><td class='muted'>None yet</td></tr></tbody>";
+  } catch (e) {}
+}
+
+$("form").onsubmit = async ev => {
+  ev.preventDefault();
+  const text = $("text").value.trim(); if (!text) return;
+  $("text").value = ""; $("send").disabled = true;
+  addUser(text);
+  const pending = addBot(`<div class="thinking">Laya is deciding... (running the workflow)</div>`);
+  const t0 = Date.now(); const timer = setInterval(() => pending.querySelector(".thinking").textContent = `Laya is deciding... ${((Date.now() - t0) / 1000).toFixed(0)} s`, 500);
+  try {
+    const resp = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, min_probability: Number($("minp").value) }) });
+    const r = await resp.json();
+    clearInterval(timer);
+    if (!resp.ok) { pending.innerHTML = `<div class="answer err">${esc(r.detail || "Something went wrong")}</div>`; return; }
+    pending.innerHTML = botHtml(r); updateSession(r); loadRecent();
+  } catch (e) { clearInterval(timer); pending.innerHTML = `<div class="answer err">Could not reach the router: ${esc(e.message)}</div>`; }
+  finally { $("send").disabled = false; $("text").focus(); }
+};
+
+// ---------------------------------------------------------------- benchmark
+const tip = $("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.style.display = "block"; tip.style.left = Math.min(ev.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (ev.clientY + 12) + "px"; }
+const NAMES = { laya: "Laya (CPU)", sonnet: "Claude Sonnet 4.6", haiku: "Claude Haiku 5.5", llama: "Llama 3.1 8B" };
+const name = k => NAMES[k] || (k.startsWith("router@") ? "Router, threshold " + k.split("@")[1] : k);
+
+function shell(el, title, sub) {
+  el.innerHTML = `<div class="card-head"><div><h2>${esc(title)}</h2><p class="muted">${esc(sub)}</p></div><button class="btn" style="font-size:13px">Table</button></div><div class="chart"></div><div class="table-view"></div>`;
+  const b = el.querySelector("button"); b.onclick = () => { const on = el.classList.toggle("show-table"); b.textContent = on ? "Chart" : "Table"; };
+  return { chart: el.querySelector(".chart"), table: el.querySelector(".table-view") };
+}
+function hbars(el, title, sub, rows, fmt, max) {
+  const { chart, table } = shell(el, title, sub);
+  const W = 640, lw = 190, right = 80, rh = 34, bar = 20, H = rows.length * rh + 28;
+  max = max || Math.max(...rows.map(r => r.v)) * 1.05;
+  const x = v => lw + (W - lw - right) * v / max;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(title)}">`;
+  rows.forEach((r, i) => {
+    const y = i * rh + (rh - bar) / 2, w = Math.max(0, x(r.v) - x(0)), rr = Math.min(4, w);
+    s += `<text x="${lw - 10}" y="${y + 15}" text-anchor="end">${esc(r.label)}</text>`;
+    if (w > 0) s += `<path d="M${x(0)},${y} h${w - rr} q${rr},0 ${rr},${rr} v${bar - 2 * rr} q0,${rr} -${rr},${rr} h-${w - rr} z" fill="${r.color}"/>`;
+    s += `<text class="val" x="${x(r.v) + 6}" y="${y + 15}">${fmt(r.v)}</text>`;
+    s += `<rect x="0" y="${i * rh}" width="${W}" height="${rh}" fill="transparent" data-i="${i}"/>`;
+  });
+  s += `<line x1="${x(0)}" x2="${x(0)}" y1="0" y2="${H - 28}" stroke="var(--axis)"/></svg>`;
+  chart.innerHTML = s;
+  chart.querySelectorAll("rect[data-i]").forEach(rect => { const r = rows[+rect.dataset.i];
+    rect.onmousemove = ev => showTip(ev, `<b>${esc(r.label)}</b><br>${fmt(r.v)}`); rect.onmouseleave = () => tip.style.display = "none"; });
+  table.innerHTML = `<table><tbody>${rows.map(r => `<tr><td>${esc(r.label)}</td><td class="num">${fmt(r.v)}</td></tr>`).join("")}</tbody></table>`;
+}
+
+let benchLoaded = false;
+async function loadBenchmark() {
+  if (benchLoaded) return;
+  const resp = await fetch("/api/benchmark");
+  if (!resp.ok) { $("bench-source").textContent = "No benchmark results yet. Run: docker compose run --rm bench"; return; }
+  const d = await resp.json(); benchLoaded = true;
+  const S = d.summary;
+  $("bench-source").textContent = `Results from ${d.source} (run ${d.run_id}): 200 labeled messages, prices read ${d.prices_read}. Laya priced at $${d.laya_hourly_usd}/hour on its measured CPU throughput.`;
+  const best = ["sonnet", "haiku", "llama", "laya"].filter(k => S[k]);
+  $("kpis").innerHTML = [
+    ["Most accurate", name(best.reduce((a, b) => S[a].all_correct >= S[b].all_correct ? a : b)), "all three labels correct"],
+    ["Haiku vs Sonnet", S.haiku && S.sonnet ? `${(S.sonnet.cost_per_1m_usd / S.haiku.cost_per_1m_usd).toFixed(0)}x cheaper` : "-", `${S.haiku ? S.haiku.all_correct.toFixed(0) : "-"}% vs ${S.sonnet ? S.sonnet.all_correct.toFixed(0) : "-"}% correct`],
+    ["Laya on CPU", S.laya ? `${S.laya.all_correct.toFixed(0)}% correct` : "-", S.laya ? `${S.laya.flip_rate.toFixed(0)}% different answer when reworded` : ""],
+    ["Laya break-even vs Sonnet", S.laya && S.laya.break_even_monthly ? `${Math.round(S.laya.break_even_monthly.sonnet / 1000)}k / month` : "-", "decisions, keeping one CPU machine up"],
+  ].map(([l, v, n]) => `<div class="card"><div class="muted">${l}</div><div class="big" style="font-size:26px">${esc(v)}</div><div class="muted">${esc(n)}</div></div>`).join("");
+  const colors = { laya: "var(--s3)", sonnet: "var(--s4)", haiku: "var(--s1)", llama: "var(--s2)" };
+  const keys = best.concat(["router@0.6", "router@0.7"].filter(k => S[k]));
+  hbars($("c-acc"), "All three labels correct", "Intent, category and period, % of 200 messages", keys.map(k => ({ label: name(k), v: S[k].all_correct, color: colors[k] || "var(--muted)" })), v => v.toFixed(1) + "%", 100);
+  hbars($("c-cost"), "Cost per 1 million decisions", "USD. Laya also costs about $" + (S.laya ? S.laya.fixed_monthly_usd.toFixed(0) : "-") + "/month to keep running",
+    keys.map(k => ({ label: name(k), v: S[k].cost_per_1m_usd, color: colors[k] || "var(--muted)" })), v => "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 }));
+  $("c-table").innerHTML = `<h2>Every classifier</h2><p class="muted">Accuracy in %. Flip rate: share of reworded twins that got a different answer. Latency per message.</p>
+    <table><thead><tr><th>Classifier</th><th class="num">Intent</th><th class="num">Category</th><th class="num">Period</th><th class="num">All correct</th><th class="num">Flip rate</th><th class="num">p50 ms</th><th class="num">Tokens in/out</th><th class="num">Cost per 1M</th></tr></thead><tbody>` +
+    Object.entries(S).map(([k, e]) => `<tr><td>${esc(name(k))}</td><td class="num">${e.intent_acc.toFixed(1)}</td><td class="num">${e.category_acc.toFixed(1)}</td><td class="num">${e.period_acc.toFixed(1)}</td><td class="num">${e.all_correct.toFixed(1)}</td><td class="num">${e.flip_rate.toFixed(1)}</td><td class="num">${Math.round(e.latency_p50_ms).toLocaleString("en-US")}</td><td class="num">${Math.round(e.avg_input_tokens)}/${Math.round(e.avg_output_tokens)}</td><td class="num">$${e.cost_per_1m_usd.toFixed(2)}</td></tr>`).join("") + "</tbody></table>";
+  const routers = Object.entries(S).filter(([k]) => k.startsWith("router@"));
+  $("c-router").innerHTML = `<h2>Router threshold sweep</h2><p class="muted">Laya decides when its probability is at least the threshold; Haiku handles the rest.</p>
+    <table><thead><tr><th>Threshold</th><th class="num">Sent to LLM</th><th class="num">All correct</th><th class="num">Cost per 1M</th></tr></thead><tbody>` +
+    routers.map(([k, e]) => `<tr><td>${k.split("@")[1]}</td><td class="num">${e.escalation_rate.toFixed(1)}%</td><td class="num">${e.all_correct.toFixed(1)}%</td><td class="num">$${e.cost_per_1m_usd.toFixed(2)}</td></tr>`).join("") + "</tbody></table>";
+  $("c-notes").innerHTML = `<h2>How to read this</h2>
+    <p>Versus a large model the two-tier idea pays: Haiku matches Sonnet's accuracy at a fraction of the cost.</p>
+    <p>Versus a cheap small LLM, Laya on CPU does not pay off here: it is rarely confident, so the router still calls the LLM for most messages and pays for both.</p>
+    <p>Laya ran on a 4-CPU Docker VM. On a GPU it is reported to be far faster, which would cut its cost per decision sharply. Llama 3.1 8B often answered with an option's description instead of its name, which counts as wrong.</p>
+    <p class="muted">Rerun with your own settings: <code>docker compose run --rm bench</code>, then reload this tab.</p>`;
+}
+
+// ---------------------------------------------------------------- start
+(async () => {
+  try { CONFIG = await (await fetch("/api/config")).json(); } catch (e) {}
+  $("minp").value = CONFIG.min_probability ?? 0.7; $("minp").oninput();
+  const fromHash = { "#bench": "bench", "#how": "how" }[location.hash];
+  if (fromHash) document.querySelector(`nav [data-tab="${fromHash}"]`).click();
+  addBot(`<div class="answer">Hi. Tell me about a payment, or ask what you spent.</div><div class="meta">Try one of the examples below. Each reply shows whether Laya decided on its own or asked the LLM.</div>`);
+  loadRecent();
+})();
+</script>
+</body>
+</html>

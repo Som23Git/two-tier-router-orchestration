@@ -98,6 +98,25 @@ services:
         condition: service_healthy
     restart: "no"
 
+  # The chat page: http://localhost:8080 (APP_PORT). Talks to Kibana for the
+  # browser, so the Elastic credentials never reach the browser.
+  app:
+    build: ./app
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_URL=http://kibana:5601
+      - ES_URL=http://elasticsearch:9200
+      - KIBANA_PUBLIC_URL=http://localhost:${KIBANA_PORT:-5601}
+      - ROUTER_MIN_PROBABILITY=${ROUTER_MIN_PROBABILITY:-0.7}
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    volumes:
+      - ./data:/app/data:ro
+      - ./results:/app/results:ro
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+
   # On demand: docker compose run --rm bench
   bench:
     build: ./tools
