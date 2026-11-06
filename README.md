@@ -1,4 +1,4 @@
-# Two-tier router on Elastic: a hands-on tutorial
+# Decide first, generate later: a two-tier router on Elastic Workflows
 
 Most messages to a finance assistant are easy to classify. Is the user
 recording a payment, or asking about past spending? Which category? Which
@@ -49,8 +49,8 @@ flowchart LR
 ## Step 1: Get the code
 
 ```bash
-git clone https://github.com/Som23Git/two-tier-router-docker.git
-cd two-tier-router-docker
+git clone https://github.com/Som23Git/two-tier-router-orchestration.git
+cd two-tier-router-orchestration
 ```
 
 ## Step 2: Start everything with one command
