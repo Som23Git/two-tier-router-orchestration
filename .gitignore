@@ -1,0 +1,22 @@
+# Secrets and local settings
+.env
+
+# Benchmark output
+results/*
+!results/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+.claude/
+
+# Cloud credential downloads (never commit)
+*accessKeys*.csv
+*credentials*.csv
+*.pem

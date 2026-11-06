@@ -1,0 +1,200 @@
+{"id": "m001", "text": "paid $4.50 for a flat white at Blue Bottle", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 4.5, "merchant": "Blue Bottle"}
+{"id": "m002", "text": "Starbucks this morning, 6.25", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 6.25, "merchant": "Starbucks"}
+{"id": "m003", "text": "add 3.80 coffee from the cafe near the office", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 3.8, "merchant": null}
+{"id": "m004", "text": "bought two lattes at Costa for $9.40", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 9.4, "merchant": "Costa"}
+{"id": "m005", "text": "spent 5 bucks on an espresso at Peet's", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 5.0, "merchant": "Peet's"}
+{"id": "m006", "text": "log $12 for coffee beans and a cold brew at Philz", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 12.0, "merchant": "Philz"}
+{"id": "m007", "text": "cappuccino at Dunkin 4.10", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 4.1, "merchant": "Dunkin"}
+{"id": "m008", "text": "I paid $1,000 for coffee at Starbucks", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 1000.0, "merchant": "Starbucks"}
+{"id": "m009", "text": "Whole Foods run, $86.32", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 86.32, "merchant": "Whole Foods"}
+{"id": "m010", "text": "add 54.10 for groceries at Trader Joe's", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 54.1, "merchant": "Trader Joe's"}
+{"id": "m011", "text": "spent $123 at Costco on food for the week", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 123.0, "merchant": "Costco"}
+{"id": "m012", "text": "paid 27.45 at Safeway", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 27.45, "merchant": "Safeway"}
+{"id": "m013", "text": "picked up milk and eggs at the corner store for $8.60", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 8.6, "merchant": null}
+{"id": "m014", "text": "Kroger groceries 71.90", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 71.9, "merchant": "Kroger"}
+{"id": "m015", "text": "log a $40 Aldi shop", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 40.0, "merchant": "Aldi"}
+{"id": "m016", "text": "weekly grocery delivery from Instacart came to $96.20", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 96.2, "merchant": "Instacart"}
+{"id": "m017", "text": "dinner at Olive Garden was $64.80", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 64.8, "merchant": "Olive Garden"}
+{"id": "m018", "text": "lunch with the team at Chipotle, my share $14.75", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 14.75, "merchant": "Chipotle"}
+{"id": "m019", "text": "add $38 for sushi takeout", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 38.0, "merchant": null}
+{"id": "m020", "text": "DoorDash order 27.60", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 27.6, "merchant": "DoorDash"}
+{"id": "m021", "text": "paid 112 for a birthday dinner at the steakhouse", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 112.0, "merchant": null}
+{"id": "m022", "text": "Uber Eats pizza $22.99", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 22.99, "merchant": "Uber Eats"}
+{"id": "m023", "text": "grabbed a burrito for 11.50", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 11.5, "merchant": null}
+{"id": "m024", "text": "brunch at the diner, $31.20 with tip", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 31.2, "merchant": null}
+{"id": "m025", "text": "Uber to the airport $48.30", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 48.3, "merchant": "Uber"}
+{"id": "m026", "text": "filled up the tank, 61.75 at Shell", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 61.75, "merchant": "Shell"}
+{"id": "m027", "text": "parking downtown cost me $18", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 18.0, "merchant": null}
+{"id": "m028", "text": "add 2.90 for the bus fare", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 2.9, "merchant": null}
+{"id": "m029", "text": "Lyft home from the bar, 23.40", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 23.4, "merchant": "Lyft"}
+{"id": "m030", "text": "monthly transit pass $86", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 86.0, "merchant": null}
+{"id": "m031", "text": "paid a $15 toll on the bridge", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 15.0, "merchant": null}
+{"id": "m032", "text": "taxi from the station 19.80", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 19.8, "merchant": null}
+{"id": "m033", "text": "booked flights to Denver for $412", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 412.0, "merchant": null}
+{"id": "m034", "text": "hotel in Chicago, two nights, $389", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 389.0, "merchant": null}
+{"id": "m035", "text": "Airbnb deposit 250 for the beach trip", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 250.0, "merchant": "Airbnb"}
+{"id": "m036", "text": "paid $79 for a checked bag on United", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 79.0, "merchant": "United"}
+{"id": "m037", "text": "add 1,240 for the Italy holiday package", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 1240.0, "merchant": null}
+{"id": "m038", "text": "train tickets to Boston $118", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 118.0, "merchant": null}
+{"id": "m039", "text": "rental car for the weekend, 164.50", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 164.5, "merchant": null}
+{"id": "m040", "text": "travel insurance for the trip, $54", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 54.0, "merchant": null}
+{"id": "m041", "text": "paid rent, 2,100", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 2100.0, "merchant": null}
+{"id": "m042", "text": "electricity bill came to $96.40", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 96.4, "merchant": null}
+{"id": "m043", "text": "add the internet bill, 69.99", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 69.99, "merchant": null}
+{"id": "m044", "text": "water bill $41.15", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 41.15, "merchant": null}
+{"id": "m045", "text": "mortgage payment $1,850 went out today", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 1850.0, "merchant": null}
+{"id": "m046", "text": "gas and heating bill 112.30", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 112.3, "merchant": null}
+{"id": "m047", "text": "renter's insurance $18.50", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 18.5, "merchant": null}
+{"id": "m048", "text": "paid the HOA fee of 275", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 275.0, "merchant": null}
+{"id": "m049", "text": "new running shoes from Nike, $129", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 129.0, "merchant": "Nike"}
+{"id": "m050", "text": "Amazon order for a phone charger, 24.99", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 24.99, "merchant": "Amazon"}
+{"id": "m051", "text": "bought a jacket at Uniqlo for $59.90", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 59.9, "merchant": "Uniqlo"}
+{"id": "m052", "text": "Best Buy headphones 199.99", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 199.99, "merchant": "Best Buy"}
+{"id": "m053", "text": "add $35 for a birthday present at Target", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 35.0, "merchant": "Target"}
+{"id": "m054", "text": "IKEA bookshelf, 89", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 89.0, "merchant": "IKEA"}
+{"id": "m055", "text": "spent 42.50 at the hardware store", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 42.5, "merchant": null}
+{"id": "m056", "text": "picked up a new backpack, $64", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 64.0, "merchant": null}
+{"id": "m057", "text": "Netflix subscription 15.49", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 15.49, "merchant": "Netflix"}
+{"id": "m058", "text": "two movie tickets for $28", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 28.0, "merchant": null}
+{"id": "m059", "text": "concert tickets, Taylor Swift, $340", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 340.0, "merchant": null}
+{"id": "m060", "text": "Spotify family plan $16.99", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 16.99, "merchant": "Spotify"}
+{"id": "m061", "text": "bought a game on Steam for 59.99", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 59.99, "merchant": "Steam"}
+{"id": "m062", "text": "bowling night, 36 dollars", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 36.0, "merchant": null}
+{"id": "m063", "text": "add $12 for the museum entry", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 12.0, "merchant": null}
+{"id": "m064", "text": "renewed Disney Plus, 13.99", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 13.99, "merchant": "Disney Plus"}
+{"id": "m065", "text": "pharmacy, $23.80 for prescriptions at CVS", "intent": "index", "category": "health", "period": "not_applicable", "amount": 23.8, "merchant": "CVS"}
+{"id": "m066", "text": "dentist copay 40", "intent": "index", "category": "health", "period": "not_applicable", "amount": 40.0, "merchant": null}
+{"id": "m067", "text": "gym membership $49 this month", "intent": "index", "category": "health", "period": "not_applicable", "amount": 49.0, "merchant": null}
+{"id": "m068", "text": "add 150 for the physio session", "intent": "index", "category": "health", "period": "not_applicable", "amount": 150.0, "merchant": null}
+{"id": "m069", "text": "bought vitamins at Walgreens, 18.25", "intent": "index", "category": "health", "period": "not_applicable", "amount": 18.25, "merchant": "Walgreens"}
+{"id": "m070", "text": "doctor visit copay of $25", "intent": "index", "category": "health", "period": "not_applicable", "amount": 25.0, "merchant": null}
+{"id": "m071", "text": "new glasses, $210 at the optician", "intent": "index", "category": "health", "period": "not_applicable", "amount": 210.0, "merchant": null}
+{"id": "m072", "text": "yoga class pack $95", "intent": "index", "category": "health", "period": "not_applicable", "amount": 95.0, "merchant": null}
+{"id": "m073", "text": "log 7.20 at the coffee cart", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 7.2, "merchant": null}
+{"id": "m074", "text": "add an expense: $60 groceries", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 60.0, "merchant": null}
+{"id": "m075", "text": "paid the phone bill, $55", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 55.0, "merchant": null}
+{"id": "m076", "text": "what did I spend last month?", "intent": "search", "category": "all", "period": "last_month"}
+{"id": "m077", "text": "how much have I spent on coffee this week", "intent": "search", "category": "coffee", "period": "this_week"}
+{"id": "m078", "text": "total grocery spending this month", "intent": "search", "category": "groceries", "period": "this_month"}
+{"id": "m079", "text": "how much did dining out cost me last week?", "intent": "search", "category": "dining", "period": "last_week"}
+{"id": "m080", "text": "show my transport costs this year", "intent": "search", "category": "transport", "period": "this_year"}
+{"id": "m081", "text": "what's my travel spend so far this year", "intent": "search", "category": "travel", "period": "this_year"}
+{"id": "m082", "text": "how much rent and utilities did I pay last month", "intent": "search", "category": "housing", "period": "last_month"}
+{"id": "m083", "text": "list my shopping purchases this month", "intent": "search", "category": "shopping", "period": "this_month"}
+{"id": "m084", "text": "how much do I spend on subscriptions and entertainment in total", "intent": "search", "category": "entertainment", "period": "all_time"}
+{"id": "m085", "text": "what have I spent on health stuff this year", "intent": "search", "category": "health", "period": "this_year"}
+{"id": "m086", "text": "how much did I spend today", "intent": "search", "category": "all", "period": "today"}
+{"id": "m087", "text": "coffee spending last month?", "intent": "search", "category": "coffee", "period": "last_month"}
+{"id": "m088", "text": "did I spend more than $500 on groceries last month", "intent": "search", "category": "groceries", "period": "last_month"}
+{"id": "m089", "text": "show all my expenses this week", "intent": "search", "category": "all", "period": "this_week"}
+{"id": "m090", "text": "what's the total for restaurants this month", "intent": "search", "category": "dining", "period": "this_month"}
+{"id": "m091", "text": "how much went on Uber and taxis last week", "intent": "search", "category": "transport", "period": "last_week"}
+{"id": "m092", "text": "what did the Denver trip cost in total", "intent": "search", "category": "travel", "period": "all_time"}
+{"id": "m093", "text": "what are my payment expenses that happened last month", "intent": "search", "category": "all", "period": "last_month"}
+{"id": "m094", "text": "how much did I pay for utilities this year", "intent": "search", "category": "housing", "period": "this_year"}
+{"id": "m095", "text": "biggest shopping purchase this year?", "intent": "search", "category": "shopping", "period": "this_year"}
+{"id": "m096", "text": "how much have I spent on movies and concerts last month", "intent": "search", "category": "entertainment", "period": "last_month"}
+{"id": "m097", "text": "pharmacy spending this month", "intent": "search", "category": "health", "period": "this_month"}
+{"id": "m098", "text": "what did I spend on coffee today", "intent": "search", "category": "coffee", "period": "today"}
+{"id": "m099", "text": "total spend this year", "intent": "search", "category": "all", "period": "this_year"}
+{"id": "m100", "text": "how much on groceries this week", "intent": "search", "category": "groceries", "period": "this_week"}
+{"id": "m101", "text": "show me last week's dining expenses", "intent": "search", "category": "dining", "period": "last_week"}
+{"id": "m102", "text": "how much did fuel cost me this month", "intent": "search", "category": "transport", "period": "this_month"}
+{"id": "m103", "text": "hotel spending last month", "intent": "search", "category": "travel", "period": "last_month"}
+{"id": "m104", "text": "how much was rent this month", "intent": "search", "category": "housing", "period": "this_month"}
+{"id": "m105", "text": "what did I buy on Amazon last week", "intent": "search", "category": "shopping", "period": "last_week"}
+{"id": "m106", "text": "Netflix and Spotify costs this year", "intent": "search", "category": "entertainment", "period": "this_year"}
+{"id": "m107", "text": "gym and doctor costs last month", "intent": "search", "category": "health", "period": "last_month"}
+{"id": "m108", "text": "how much have I spent overall since I started tracking", "intent": "search", "category": "all", "period": "all_time"}
+{"id": "m109", "text": "average coffee spend per week this month", "intent": "search", "category": "coffee", "period": "this_month"}
+{"id": "m110", "text": "how much did I spend on food shopping last month", "intent": "search", "category": "groceries", "period": "last_month"}
+{"id": "m111", "text": "takeout spending this week", "intent": "search", "category": "dining", "period": "this_week"}
+{"id": "m112", "text": "parking and tolls this year", "intent": "search", "category": "transport", "period": "this_year"}
+{"id": "m113", "text": "flights booked this month", "intent": "search", "category": "travel", "period": "this_month"}
+{"id": "m114", "text": "what were my bills last week", "intent": "search", "category": "housing", "period": "last_week"}
+{"id": "m115", "text": "clothes spending this year", "intent": "search", "category": "shopping", "period": "this_year"}
+{"id": "m116", "text": "entertainment this week", "intent": "search", "category": "entertainment", "period": "this_week"}
+{"id": "m117", "text": "any health expenses today?", "intent": "search", "category": "health", "period": "today"}
+{"id": "m118", "text": "summarize my spending this month", "intent": "search", "category": "all", "period": "this_month"}
+{"id": "m119", "text": "what did I spend last week in total", "intent": "search", "category": "all", "period": "last_week"}
+{"id": "m120", "text": "how much coffee did I buy this year", "intent": "search", "category": "coffee", "period": "this_year"}
+{"id": "m121", "text": "groceries total for all time", "intent": "search", "category": "groceries", "period": "all_time"}
+{"id": "m122", "text": "how much have restaurants cost me this year", "intent": "search", "category": "dining", "period": "this_year"}
+{"id": "m123", "text": "how much did I spend on transport last month", "intent": "search", "category": "transport", "period": "last_month"}
+{"id": "m124", "text": "travel costs last week", "intent": "search", "category": "travel", "period": "last_week"}
+{"id": "m125", "text": "electricity and water this month", "intent": "search", "category": "housing", "period": "this_month"}
+{"id": "m126", "text": "how much on electronics last month", "intent": "search", "category": "shopping", "period": "last_month"}
+{"id": "m127", "text": "game purchases this month", "intent": "search", "category": "entertainment", "period": "this_month"}
+{"id": "m128", "text": "dentist and pharmacy this week", "intent": "search", "category": "health", "period": "this_week"}
+{"id": "m129", "text": "where did my money go this week", "intent": "search", "category": "all", "period": "this_week"}
+{"id": "m130", "text": "list everything I paid today", "intent": "search", "category": "all", "period": "today"}
+{"id": "m131", "text": "Starbucks total last week", "intent": "search", "category": "coffee", "period": "last_week"}
+{"id": "m132", "text": "Costco spend this year", "intent": "search", "category": "groceries", "period": "this_year"}
+{"id": "m133", "text": "DoorDash orders last month", "intent": "search", "category": "dining", "period": "last_month"}
+{"id": "m134", "text": "gas station spending this week", "intent": "search", "category": "transport", "period": "this_week"}
+{"id": "m135", "text": "Airbnb costs this year", "intent": "search", "category": "travel", "period": "this_year"}
+{"id": "m136", "text": "how much did internet cost me all time", "intent": "search", "category": "housing", "period": "all_time"}
+{"id": "m137", "text": "Target purchases this week", "intent": "search", "category": "shopping", "period": "this_week"}
+{"id": "m138", "text": "streaming subscriptions last month", "intent": "search", "category": "entertainment", "period": "last_month"}
+{"id": "m139", "text": "gym spending all time", "intent": "search", "category": "health", "period": "all_time"}
+{"id": "m140", "text": "did I spend anything on coffee this month?", "intent": "search", "category": "coffee", "period": "this_month"}
+{"id": "m141", "text": "breakfast and lunch out today", "intent": "search", "category": "dining", "period": "today"}
+{"id": "m142", "text": "transit pass costs all time", "intent": "search", "category": "transport", "period": "all_time"}
+{"id": "m143", "text": "what's my biggest expense category this year", "intent": "search", "category": "all", "period": "this_year"}
+{"id": "m144", "text": "show me expenses over $100 last month", "intent": "search", "category": "all", "period": "last_month"}
+{"id": "m145", "text": "how much did I spend on the weekend trip last week", "intent": "search", "category": "travel", "period": "last_week"}
+{"id": "m146", "text": "hi there", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m147", "text": "what can you do?", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m148", "text": "set a budget of $300 for dining", "intent": "other", "category": "dining", "period": "not_applicable"}
+{"id": "m149", "text": "remind me to pay rent on Friday", "intent": "other", "category": "housing", "period": "not_applicable"}
+{"id": "m150", "text": "delete the last expense I added", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m151", "text": "what's the weather tomorrow", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m152", "text": "convert 100 dollars to euros", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m153", "text": "thanks!", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m154", "text": "how do I export my data", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m155", "text": "change my currency to EUR", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m156", "text": "who won the game last night", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m157", "text": "tell me a joke", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m158", "text": "is it cheaper to cook at home than eat out?", "intent": "other", "category": "dining", "period": "not_applicable"}
+{"id": "m159", "text": "what's a good coffee shop near me", "intent": "other", "category": "coffee", "period": "not_applicable"}
+{"id": "m160", "text": "can you split the dinner bill three ways", "intent": "other", "category": "dining", "period": "not_applicable"}
+{"id": "m161", "text": "how much is a flight to Paris usually", "intent": "other", "category": "travel", "period": "not_applicable"}
+{"id": "m162", "text": "my card got declined at the pharmacy", "intent": "other", "category": "health", "period": "not_applicable"}
+{"id": "m163", "text": "undo", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m164", "text": "what's 15% tip on $80", "intent": "other", "category": "dining", "period": "not_applicable"}
+{"id": "m165", "text": "reset my password", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m166", "text": "is Netflix worth it", "intent": "other", "category": "entertainment", "period": "not_applicable"}
+{"id": "m167", "text": "translate this receipt to English", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m168", "text": "good morning", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m169", "text": "show me how to add an expense", "intent": "other", "category": "all", "period": "not_applicable"}
+{"id": "m170", "text": "what is the price of a latte at Starbucks", "intent": "other", "category": "coffee", "period": "not_applicable"}
+{"id": "m171", "text": "flat white from Blue Bottle, $4.50", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 4.5, "merchant": "Blue Bottle", "twin_of": "m001"}
+{"id": "m172", "text": "spent 86.32 at Whole Foods", "intent": "index", "category": "groceries", "period": "not_applicable", "amount": 86.32, "merchant": "Whole Foods", "twin_of": "m009"}
+{"id": "m173", "text": "Olive Garden dinner, paid $64.80", "intent": "index", "category": "dining", "period": "not_applicable", "amount": 64.8, "merchant": "Olive Garden", "twin_of": "m017"}
+{"id": "m174", "text": "$48.30 Uber ride to the airport", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 48.3, "merchant": "Uber", "twin_of": "m025"}
+{"id": "m175", "text": "Denver flights booked, 412 dollars", "intent": "index", "category": "travel", "period": "not_applicable", "amount": 412.0, "merchant": null, "twin_of": "m033"}
+{"id": "m176", "text": "rent paid: $2,100", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 2100.0, "merchant": null, "twin_of": "m041"}
+{"id": "m177", "text": "Nike running shoes for 129", "intent": "index", "category": "shopping", "period": "not_applicable", "amount": 129.0, "merchant": "Nike", "twin_of": "m049"}
+{"id": "m178", "text": "15.49 for Netflix", "intent": "index", "category": "entertainment", "period": "not_applicable", "amount": 15.49, "merchant": "Netflix", "twin_of": "m057"}
+{"id": "m179", "text": "CVS prescriptions came to $23.80", "intent": "index", "category": "health", "period": "not_applicable", "amount": 23.8, "merchant": "CVS", "twin_of": "m065"}
+{"id": "m180", "text": "add $1,000 Starbucks coffee", "intent": "index", "category": "coffee", "period": "not_applicable", "amount": 1000.0, "merchant": "Starbucks", "twin_of": "m008"}
+{"id": "m181", "text": "Shell gas fill up $61.75", "intent": "index", "category": "transport", "period": "not_applicable", "amount": 61.75, "merchant": "Shell", "twin_of": "m026"}
+{"id": "m182", "text": "$96.40 for the electricity bill", "intent": "index", "category": "housing", "period": "not_applicable", "amount": 96.4, "merchant": null, "twin_of": "m042"}
+{"id": "m183", "text": "how much money did I spend last month", "intent": "search", "category": "all", "period": "last_month", "twin_of": "m076"}
+{"id": "m184", "text": "coffee spend so far this week?", "intent": "search", "category": "coffee", "period": "this_week", "twin_of": "m077"}
+{"id": "m185", "text": "how much on groceries this month", "intent": "search", "category": "groceries", "period": "this_month", "twin_of": "m078"}
+{"id": "m186", "text": "transport spending this year so far", "intent": "search", "category": "transport", "period": "this_year", "twin_of": "m080"}
+{"id": "m187", "text": "last month's rent and utility total", "intent": "search", "category": "housing", "period": "last_month", "twin_of": "m082"}
+{"id": "m188", "text": "what have I spent today", "intent": "search", "category": "all", "period": "today", "twin_of": "m086"}
+{"id": "m189", "text": "show my expenses from last month", "intent": "search", "category": "all", "period": "last_month", "twin_of": "m093"}
+{"id": "m190", "text": "how much have I spent this year", "intent": "search", "category": "all", "period": "this_year", "twin_of": "m099"}
+{"id": "m191", "text": "what did hotels cost me last month", "intent": "search", "category": "travel", "period": "last_month", "twin_of": "m103"}
+{"id": "m192", "text": "all-time total spending", "intent": "search", "category": "all", "period": "all_time", "twin_of": "m108"}
+{"id": "m193", "text": "give me a summary of this month's spending", "intent": "search", "category": "all", "period": "this_month", "twin_of": "m118"}
+{"id": "m194", "text": "transport costs for last month", "intent": "search", "category": "transport", "period": "last_month", "twin_of": "m123"}
+{"id": "m195", "text": "I want a $300 monthly dining budget", "intent": "other", "category": "dining", "period": "not_applicable", "twin_of": "m148"}
+{"id": "m196", "text": "can you remind me Friday to pay the rent", "intent": "other", "category": "housing", "period": "not_applicable", "twin_of": "m149"}
+{"id": "m197", "text": "remove the expense I just logged", "intent": "other", "category": "all", "period": "not_applicable", "twin_of": "m150"}
+{"id": "m198", "text": "will it rain tomorrow", "intent": "other", "category": "all", "period": "not_applicable", "twin_of": "m151"}
+{"id": "m199", "text": "is eating out more expensive than cooking", "intent": "other", "category": "dining", "period": "not_applicable", "twin_of": "m158"}
+{"id": "m200", "text": "how much does a latte cost at Starbucks", "intent": "other", "category": "coffee", "period": "not_applicable", "twin_of": "m170"}

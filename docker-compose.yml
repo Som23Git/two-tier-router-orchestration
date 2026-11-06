@@ -1,0 +1,121 @@
+# Two-tier router, local edition: Elasticsearch, Kibana, Laya and a one-shot
+# setup, started with `docker compose up -d`. Settings come from .env (copy
+# .env.example). See README.md.
+name: two-tier-router
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-9.5.6}
+    environment:
+      - discovery.type=single-node
+      - cluster.name=two-tier-router
+      - xpack.security.enabled=true
+      # Local demo over plain HTTP on localhost only (ports bind to 127.0.0.1).
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      # Workflows and the AI steps need a paid tier on self-managed clusters.
+      # The self-generated trial enables them for 30 days.
+      - xpack.license.self_generated.type=trial
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?Set ELASTIC_PASSWORD in .env}
+      - ES_JAVA_OPTS=-Xms${ES_HEAP:-1g} -Xmx${ES_HEAP:-1g}
+    ports:
+      - "127.0.0.1:${ES_PORT:-9200}:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    mem_limit: ${ES_MEM_LIMIT:-2g}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:$${ELASTIC_PASSWORD} http://localhost:9200/_cluster/health | grep -qE '\"status\":\"(green|yellow)\"'"]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+
+  # Sets the kibana_system password so Kibana can connect. Runs once.
+  init:
+    build: ./tools
+    command: ["python", "init_es.py"]
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD:?Set KIBANA_PASSWORD in .env}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: "no"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-9.5.6}
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - SERVER_PUBLICBASEURL=http://localhost:${KIBANA_PORT:-5601}
+      # Needed for connectors, workflows and saved objects with secrets.
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY:?Set KIBANA_ENCRYPTION_KEY in .env}
+      - XPACK_SECURITY_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+    ports:
+      - "127.0.0.1:${KIBANA_PORT:-5601}:5601"
+    mem_limit: ${KIBANA_MEM_LIMIT:-1536m}
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://localhost:5601/api/status | grep -qE '200|401'"]
+      interval: 10s
+      timeout: 10s
+      retries: 90
+
+  laya:
+    build: ./laya
+    environment:
+      - LAYA_MODELS=english
+      - LAYA_DEVICE=cpu
+      - LAYA_THREADS=${LAYA_THREADS:-4}
+      - LAYA_PRELOAD=1
+    ports:
+      - "127.0.0.1:${LAYA_PORT:-8000}:8000"
+    volumes:
+      - laya-models:/models
+    mem_limit: ${LAYA_MEM_LIMIT:-3g}
+
+  # Creates everything the demo needs, then exits: API key, OpenRouter
+  # presets, inference endpoints, indices, sample expenses, the benchmark
+  # dataset and the finance-router workflow. Safe to run again.
+  setup:
+    build: ./tools
+    command: ["python", "setup.py"]
+    env_file: .env
+    environment:
+      - ES_URL=http://elasticsearch:9200
+      - KIBANA_URL=http://kibana:5601
+      - LAYA_URL=http://laya:8000
+      - KIBANA_PUBLIC_URL=http://localhost:${KIBANA_PORT:-5601}
+    volumes:
+      - ./data:/app/data:ro
+    depends_on:
+      kibana:
+        condition: service_healthy
+      laya:
+        condition: service_healthy
+    restart: "no"
+
+  # On demand: docker compose run --rm bench
+  bench:
+    build: ./tools
+    command: ["python", "bench.py"]
+    profiles: ["bench"]
+    env_file: .env
+    environment:
+      - ES_URL=http://elasticsearch:9200
+      - LAYA_URL=http://laya:8000
+    volumes:
+      - ./data:/app/data:ro
+      - ./results:/app/results
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      laya:
+        condition: service_healthy
+
+volumes:
+  esdata:
+  laya-models:

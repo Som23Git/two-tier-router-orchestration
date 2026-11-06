@@ -1,0 +1,207 @@
+# Template for the finance-router workflow. tools/setup.py fills the
+# double-underscore tokens (the label set comes from tools/labels.py) and
+# registers it through the Kibana Workflows API.
+#
+# Tier 1, decide: Laya (non-generative) answers three choice questions with
+#   probabilities. If every needed answer is at least min_probability likely,
+#   its labels are used and no LLM is called to classify.
+# Tier 2, fallback: a small LLM classifies only the messages Laya is unsure of.
+# Then the message is either saved as an expense (index), answered with a
+# templated ES|QL query (search), or politely refused (other).
+name: Finance router (Laya first, LLM fallback)
+description: >
+  Routes a finance message: records an expense or answers a spending question.
+  Laya decides; a small LLM is called only when Laya is not confident.
+enabled: true
+tags: [laya, two-tier, router]
+
+triggers:
+  - type: manual
+    inputs:
+      - name: text
+        type: string
+        required: true
+      - name: min_probability
+        type: number
+        default: __MIN_PROBABILITY__
+
+consts:
+  layaUrl: "__LAYA_URL__/v1/systemone"
+  fallbackLlm: "__FALLBACK_ENDPOINT__"
+  extractLlm: "__EXTRACT_ENDPOINT__"
+  expensesIndex: expenses
+  logIndex: router-log
+
+settings:
+  timeout: "5m"
+
+steps:
+  # ---------------------------------------------------------------- tier 1
+  - name: laya
+    type: http
+    with:
+      url: "{{ consts.layaUrl }}"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        model: english
+        state: "{{ inputs.text }}"
+        questions:
+          __LAYA_QUESTIONS__
+
+  # The probability Laya gives its own choice, for every question this message
+  # needs (period only matters for search). Below min_probability: fall back.
+  - name: laya_gate
+    type: data.set
+    with:
+      laya_route: |-
+        {%- assign a = steps.laya.output.data.answers -%}
+        {%- assign p_intent = a.intent.probabilities[a.intent.choice] -%}
+        {%- assign p_category = a.category.probabilities[a.category.choice] -%}
+        {%- assign p_period = a.period.probabilities[a.period.choice] -%}
+        {%- assign ok = true -%}
+        {%- if p_intent < inputs.min_probability -%}{%- assign ok = false -%}{%- endif -%}
+        {%- if a.intent.choice != "other" and p_category < inputs.min_probability -%}{%- assign ok = false -%}{%- endif -%}
+        {%- if a.intent.choice == "search" and p_period < inputs.min_probability -%}{%- assign ok = false -%}{%- endif -%}
+        {%- if ok -%}laya{%- else -%}llm{%- endif -%}
+      laya_min_probability: |-
+        {%- assign a = steps.laya.output.data.answers -%}
+        {%- assign m = a.intent.probabilities[a.intent.choice] -%}
+        {%- if a.category.probabilities[a.category.choice] < m -%}{%- assign m = a.category.probabilities[a.category.choice] -%}{%- endif -%}
+        {{ m }}
+
+  - name: decide
+    type: switch
+    expression: "{{ variables.laya_route }}"
+    cases:
+      - match: laya
+        steps:
+          - name: use_laya
+            type: data.set
+            with:
+              intent: "{{ steps.laya.output.data.answers.intent.choice }}"
+              category: "{{ steps.laya.output.data.answers.category.choice }}"
+              period: "{{ steps.laya.output.data.answers.period.choice }}"
+              decided_by: laya
+    default:
+      # ------------------------------------------------------------ tier 2
+      - name: llm_classify
+        type: ai.prompt
+        connector-id: "{{ consts.fallbackLlm }}"
+        with:
+          prompt: |
+            __LLM_PROMPT__
+          temperature: 0
+      - name: llm_json
+        type: data.regexExtract
+        source: "${{ steps.llm_classify.output.content }}"
+        errorIfNoMatch: true
+        with:
+          pattern: "(\\{[\\s\\S]*\\})"
+          fields:
+            json: "$1"
+      - name: llm_labels
+        type: data.parseJson
+        source: "${{ steps.llm_json.output.json }}"
+        with: {}
+      - name: use_llm
+        type: data.set
+        with:
+          intent: "{{ steps.llm_labels.output.intent }}"
+          category: "{{ steps.llm_labels.output.category }}"
+          period: "{{ steps.llm_labels.output.period }}"
+          decided_by: llm
+
+  # ---------------------------------------------------------------- act
+  - name: act
+    type: switch
+    expression: "{{ variables.intent }}"
+    cases:
+      - match: index
+        steps:
+          - name: amount
+            type: data.regexExtract
+            source: "{{ inputs.text }}"
+            errorIfNoMatch: false
+            with:
+              pattern: "([0-9][0-9,]*(?:\\.[0-9]{1,2})?)"
+              fields:
+                value: "$1"
+          # Laya picks labels but cannot copy free text, so the merchant name
+          # comes from a short LLM call.
+          - name: merchant
+            type: ai.prompt
+            connector-id: "{{ consts.extractLlm }}"
+            # Without a working LLM the expense is still saved, merchant "unknown".
+            on-failure:
+              continue: true
+            with:
+              prompt: |
+                Return only the merchant or payee name in this message, or the word none.
+                Message: {{ inputs.text }}
+              temperature: 0
+          - name: save_expense
+            type: elasticsearch.index
+            with:
+              index: "{{ consts.expensesIndex }}"
+              refresh: "wait_for"
+              document:
+                "@timestamp": "{{ now | date: '%s%L' }}"
+                amount: "${{ steps.amount.output.value | remove: ',' | plus: 0 }}"
+                currency: USD
+                merchant: "{{ steps.merchant.output.content | default: 'unknown' | strip }}"
+                category: "{{ variables.category }}"
+                description: "{{ inputs.text }}"
+                source: router
+          - name: index_answer
+            type: data.set
+            with:
+              answer: "Saved {{ steps.amount.output.value }} USD at {{ steps.merchant.output.content | default: 'unknown' | strip }} under {{ variables.category }}."
+      - match: search
+        steps:
+          # Templated ES|QL: no model writes the query.
+          - name: build_query
+            type: data.set
+            with:
+              esql: |-
+                FROM expenses
+                {%- case variables.period -%}
+                {%- when "today" %} | WHERE @timestamp >= DATE_TRUNC(1 day, NOW())
+                {%- when "this_week" %} | WHERE @timestamp >= DATE_TRUNC(1 week, NOW())
+                {%- when "last_week" %} | WHERE @timestamp >= DATE_TRUNC(1 week, NOW()) - 1 week AND @timestamp < DATE_TRUNC(1 week, NOW())
+                {%- when "this_month" %} | WHERE @timestamp >= DATE_TRUNC(1 month, NOW())
+                {%- when "last_month" %} | WHERE @timestamp >= DATE_TRUNC(1 month, NOW()) - 1 month AND @timestamp < DATE_TRUNC(1 month, NOW())
+                {%- when "this_year" %} | WHERE @timestamp >= DATE_TRUNC(1 year, NOW())
+                {%- endcase -%}
+                {%- if variables.category != "all" %} | WHERE category == "{{ variables.category }}"{%- endif %}
+                | STATS total = ROUND(SUM(amount), 2), payments = COUNT(*)
+          - name: run_query
+            type: elasticsearch.esql.query
+            with:
+              query: "{{ variables.esql }}"
+          - name: search_answer
+            type: data.set
+            with:
+              answer: "You spent {{ steps.run_query.output.values[0][0] | default: 0 }} USD on {{ variables.category | replace: 'all', 'everything' }} ({{ variables.period | replace: '_', ' ' }}), {{ steps.run_query.output.values[0][1] | default: 0 }} payments."
+    default:
+      - name: other_answer
+        type: data.set
+        with:
+          answer: "I can record an expense or answer questions about your spending."
+
+  # ---------------------------------------------------------------- log
+  - name: log
+    type: elasticsearch.index
+    with:
+      index: "{{ consts.logIndex }}"
+      document:
+        "@timestamp": "{{ now | date: '%s%L' }}"
+        text: "{{ inputs.text }}"
+        intent: "{{ variables.intent }}"
+        category: "{{ variables.category }}"
+        period: "{{ variables.period }}"
+        decided_by: "{{ variables.decided_by }}"
+        laya_min_probability: "${{ variables.laya_min_probability | plus: 0 }}"
+        answer: "{{ variables.answer }}"
+        workflow_execution_id: "{{ execution.id }}"
