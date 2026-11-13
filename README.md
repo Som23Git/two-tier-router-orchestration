@@ -176,15 +176,16 @@ Results on the 200 labeled messages in `data/messages.jsonl` (2026-11-06):
 | Claude Sonnet 4.6 | 99.0% | 0% | 2.0 s | $1,401 |
 | Claude Haiku 5.5 | 98.0% | 0% | 2.0 s | $60 |
 | Llama 3.1 8B | 37.0% | 23% | 2.0 s | $19 |
-| Laya (CPU, Docker) | 55.0% | 37% | 1.3 s | $36, plus $73/month fixed |
+| Laya (CPU, Docker) | 55.0% | 37% | 1.3 s | $36, if the machine is busy all month |
 | Router, threshold 0.6 | 96.5% | 7% | 2.0 s | $87 |
 | Router, threshold 0.7 | 97.5% | 3% | 2.0 s | $92 |
 
 What it tells you:
 
 - **Against a large model, two tiers pay.** Haiku is as accurate as Sonnet for
-  this task at 1/23 of the cost, and Laya breaks even against Sonnet at about
-  52,000 decisions a month.
+  this task at 1/23 of the cost. One Laya machine costs about $73 a month
+  ($0.10 x 730 hours), the price of about 52,000 Sonnet decisions, so below
+  that volume it cannot pay for itself even if it answered every message alone.
 - **Against a cheap small LLM, Laya on CPU does not pay here.** Laya is rarely
   confident (only 6% of messages reach 0.7 on every answer), so the router
   still asks the LLM for 86 to 94% of messages and pays for both.
@@ -216,7 +217,7 @@ How the benchmark works:
 | Flip rate | 30 messages have a reworded twin with the same labels; the share answered differently |
 | Latency | p50 and p95 per message, as seen by the caller |
 | LLM cost | Average tokens per message (real counts from the Elasticsearch inference stream) times the OpenRouter list price, read when the benchmark runs |
-| Laya cost | `LAYA_HOURLY_USD` divided by the measured throughput, plus the fixed cost of keeping one machine up (`LAYA_HOURLY_USD` x 730 hours), and the break-even volume per month against each LLM |
+| Laya cost | `LAYA_HOURLY_USD` divided by the measured throughput, which assumes the machine is busy all month. Separately, the monthly cost of keeping one machine up (`LAYA_HOURLY_USD` x 730 hours) divided by each LLM's cost per decision gives the break-even volume per month. These are two views of the same machine, not costs to add together |
 | Router | Laya's labels when its probability is at least the threshold, otherwise Haiku's, for thresholds from 0.5 to 0.95 |
 
 The LLMs are called through the same Elasticsearch inference endpoints the
