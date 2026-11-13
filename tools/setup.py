@@ -59,7 +59,7 @@ def openrouter_headers():
 
 
 def upsert_preset(slug, model, extra):
-    """An OpenRouter preset holds the settings Elasticsearch's openai service cannot send."""
+    """An OpenRouter preset holds the settings Elasticsearch's OpenAI-compatible inference service cannot send."""
     config = {"model": model, "temperature": 0, "max_tokens": 256, **extra}
     resp = requests.post(f"https://openrouter.ai/api/v1/presets/{slug}/chat/completions",
                          headers=openrouter_headers(), json={**config, "messages": [{"role": "user", "content": "preset"}]},

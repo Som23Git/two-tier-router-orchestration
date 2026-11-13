@@ -5,19 +5,25 @@ recording a payment, or asking about past spending? Which category? Which
 month? Sending every one of them to a large language model works, but you pay
 for generation you do not need.
 
+This follows on from [last year's expense assistant](https://discuss.elastic.co/t/dec-3rd-2025-en-build-a-conversational-expense-assistant-using-elasticsearch-agent-builder-with-telegram-n8n-and-aws-bedrock/383585),
+which sent every message to Claude 3.5 Sonnet on AWS Bedrock just to decide
+what it meant.
+
 This tutorial builds a **two-tier router**:
 
 - **Tier 1, decide:** [Laya](https://huggingface.co/convaiinnovations/laya), an
   open-source, non-generative decision model (Apache-2.0), labels every message
-  and says how sure it is. No text is generated.
+  and says how sure it is. No text is generated. Its server accepts the same
+  `POST /v1/systemone` requests as [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev),
+  TypeSafe's hosted decision model.
 - **Tier 2, only when needed:** a small LLM (Claude Haiku 5.5) classifies the
   messages Laya is unsure about, and extracts the merchant name when an expense
   is saved.
 
 An **Elastic workflow** does the routing and **Elasticsearch** stores the
-expenses and answers the questions with ES|QL. A chat page lets anyone try it,
-and a benchmark compares Laya, three LLMs and the router on 200 labeled
-messages.
+expenses and answers the questions with ES|QL (Elasticsearch Query Language).
+A chat page lets anyone try it, and a small test compares Laya, three LLMs and
+the router on 200 labeled messages.
 
 | You type | The router decides | What happens |
 |---|---|---|
@@ -27,21 +33,15 @@ messages.
 
 Everything runs on your machine with one command.
 
-```mermaid
-flowchart LR
-    U["You, in the chat page<br/>localhost:8080"] --> APP["app<br/>chat page + small API"]
-    APP -- "runs the workflow" --> KB["Kibana 9.5.6<br/>finance-router workflow"]
-    KB -- "tier 1: http step" --> LA["Laya (laya-serve)<br/>intent, category, period<br/>+ probabilities"]
-    KB -- "tier 2: only when Laya is unsure" --> OR["OpenRouter<br/>Claude Haiku 5.5"]
-    KB --> ES[("Elasticsearch 9.5.6<br/>expenses, router-log")]
-    APP -- "reads results" --> ES
-```
+![How a message moves through the two-tier router](docs/images/architecture.png)
+
+Follow the numbers to trace one message from start to finish.
 
 ## What you need
 
 - Docker (Docker Desktop on macOS and Windows) with about 8 GB of memory available.
 - An [OpenRouter API key](https://openrouter.ai/settings/keys). A few dollars
-  of credit is plenty: the full benchmark costs well under $1. Without a key,
+  of credit is plenty: running the full test costs well under $1. Without a key,
   Laya still routes, but the LLM steps are skipped.
 - About 5 GB of free disk for images and Laya's model.
 - `bash` for `start.sh` (built in on macOS and Linux; use WSL or Git Bash on Windows).
@@ -97,10 +97,10 @@ What is running:
 |---|---|
 | `elasticsearch` | Single node with the free 30-day trial, which unlocks Workflows and the AI steps |
 | `kibana` | Workflows UI and APIs |
-| `laya` | `laya-serve` on CPU, the Jev-compatible `POST /v1/systemone` API |
-| `setup` | Runs once: turns on Workflows, creates the OpenRouter presets and inference endpoints, the indices, 13 months of sample expenses, the benchmark messages and the `finance-router` workflow |
+| `laya` | `laya-serve` on CPU, the [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)-compatible `POST /v1/systemone` API |
+| `setup` | Runs once: turns on Workflows, creates the OpenRouter presets and inference endpoints, the indices, 13 months of sample expenses, the test messages and the `finance-router` workflow |
 | `app` | The chat page and its API |
-| `bench` | The benchmark, only when you run it |
+| `bench` | The test script, only when you run it |
 
 ## Step 3: Try it in the chat page
 
@@ -161,11 +161,18 @@ FROM router-log | STATS messages = COUNT(*) BY decided_by
 FROM expenses | WHERE source == "router" | SORT @timestamp DESC
 ```
 
-## Step 5: The benchmark
+## Step 5: A quick test of the router
 
-The **Benchmark** tab in the chat page shows the results. Out of the box it
-shows the snapshot in `data/benchmark-snapshot/`; after you run your own
-benchmark it shows yours.
+The **Benchmark** tab in the chat page shows the results of a small test. Out
+of the box it shows the snapshot in `data/benchmark-snapshot/`; after you run
+your own test it shows yours.
+
+Treat these numbers as a rough check, not a benchmark. It is one run of 200
+messages that I generated myself, on one laptop. It checks only the three
+labels, not saving or querying. The router rows are not a separate run: for
+each threshold, the script takes Laya's answer where it was sure enough and
+Haiku's answer where it was not. Test with your own messages before you trust
+any of it.
 
 ![Benchmark results](docs/images/benchmark.png)
 
@@ -180,10 +187,11 @@ Results on the 200 labeled messages in `data/messages.jsonl` (2026-11-06):
 | Router, threshold 0.6 | 96.5% | 7% | 2.0 s | $87 |
 | Router, threshold 0.7 | 97.5% | 3% | 2.0 s | $92 |
 
-What it tells you:
+What the numbers suggest:
 
-- **Against a large model, two tiers pay.** Haiku is as accurate as Sonnet for
-  this task at 1/23 of the cost. One Laya machine costs about $73 a month
+- **Moving off a large model is the biggest saving.** Haiku is within one point
+  of Sonnet for this task at 1/23 of the cost, and the router at 0.7 is about
+  15 times cheaper than Sonnet. One Laya machine costs about $73 a month
   ($0.10 x 730 hours), the price of about 52,000 Sonnet decisions, so below
   that volume it cannot pay for itself even if it answered every message alone.
 - **Against a cheap small LLM, Laya on CPU does not pay here.** Laya is rarely
@@ -209,16 +217,16 @@ Then reload the Benchmark tab. Options:
 docker compose run --rm bench python bench.py --limit 40 --only laya,haiku
 ```
 
-How the benchmark works:
+How the test works:
 
 | Measure | How |
 |---|---|
 | Accuracy | Intent on every message, category on index and search messages, period on search messages, and "all three correct" |
 | Flip rate | 30 messages have a reworded twin with the same labels; the share answered differently |
 | Latency | p50 and p95 per message, as seen by the caller |
-| LLM cost | Average tokens per message (real counts from the Elasticsearch inference stream) times the OpenRouter list price, read when the benchmark runs |
+| LLM cost | Average tokens per message (real counts from the Elasticsearch inference stream) times the OpenRouter list price, read when the test runs |
 | Laya cost | `LAYA_HOURLY_USD` divided by the measured throughput, which assumes the machine is busy all month. Separately, the monthly cost of keeping one machine up (`LAYA_HOURLY_USD` x 730 hours) divided by each LLM's cost per decision gives the break-even volume per month. These are two views of the same machine, not costs to add together |
-| Router | Laya's labels when its probability is at least the threshold, otherwise Haiku's, for thresholds from 0.5 to 0.95 |
+| Router | Laya's labels when its probability is at least the threshold, otherwise Haiku's, for thresholds from 0.5 to 0.95. Worked out from the Laya and Haiku runs, not run through the workflow. Its cost adds Haiku's cost for the passed-on messages to Laya's, so it also assumes the Laya machine is busy all month |
 
 The LLMs are called through the same Elasticsearch inference endpoints the
 workflow uses. Per-message results are in `results/per_message.csv` and the
@@ -227,7 +235,7 @@ workflow uses. Per-message results are in `results/per_message.csv` and the
 ## Step 6: Make it yours
 
 - **Change the labels.** Edit `tools/labels.py`, then rerun
-  `docker compose up setup` and the benchmark. Keep descriptions short and
+  `docker compose up setup` and the test. Keep descriptions short and
   positive (see the lessons below).
 - **Change the threshold.** Set `ROUTER_MIN_PROBABILITY` in `.env` and run
   `docker compose up -d app setup`, or just use the slider.
@@ -235,9 +243,9 @@ workflow uses. Per-message results are in `results/per_message.csv` and the
   models; `FALLBACK_LLM` is the one the router uses.
 - **Use your own messages.** Replace `data/messages.jsonl` (one JSON object per
   line with `id`, `text`, `intent`, `category`, `period`; `twin_of` for
-  rewordings), rerun setup and the benchmark.
+  rewordings), rerun setup and the test.
 - **Run Laya on a Mac GPU.** Docker on macOS cannot use the Apple GPU. Run Laya
-  natively and point the benchmark at it:
+  natively and point the test at it:
 
   ```bash
   pip install "laya[serve]"
@@ -264,6 +272,9 @@ flowchart TD
     O --> LOG
 ```
 
+- **The gate is Liquid.** `laya_gate` is a Liquid template, the template
+  language Elastic Workflows uses for `{{ }}` and `{% %}`. It returns `laya` or
+  `llm`, and a `switch` step routes on it.
 - **Which answers count.** The period only matters for search, and the
   category does not matter for "other", so the gate checks only the answers a
   message needs.
@@ -320,10 +331,10 @@ docker compose down -v     # stop and delete everything, including the trial
 | `docker-compose.yml` | The stack |
 | `app/` | Chat page (`static/index.html`) and its API (`server.py`) |
 | `laya/Dockerfile` | `laya[serve]` 0.3.11 on CPU PyTorch |
-| `tools/labels.py` | The label set shared by Laya, the LLMs, the workflow and the benchmark |
+| `tools/labels.py` | The label set shared by Laya, the LLMs, the workflow and the test |
 | `tools/setup.py` | One-shot setup |
 | `tools/workflows/finance-router.yaml` | The router workflow template |
-| `tools/bench.py` | The benchmark |
+| `tools/bench.py` | The test script |
 | `data/messages.jsonl` | 200 labeled messages (87 save, 82 search, 31 other, including 30 reworded twins) |
 | `data/benchmark-snapshot/` | The results shown in the Benchmark tab until you run your own |
 | `LICENSE` | Apache License 2.0 |
