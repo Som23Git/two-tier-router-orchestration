@@ -326,3 +326,10 @@ docker compose down -v     # stop and delete everything, including the trial
 | `tools/bench.py` | The benchmark |
 | `data/messages.jsonl` | 200 labeled messages (87 save, 82 search, 31 other, including 30 reworded twins) |
 | `data/benchmark-snapshot/` | The results shown in the Benchmark tab until you run your own |
+| `LICENSE` | Apache License 2.0 |
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+It runs third-party software under its own licenses, including [Laya](https://huggingface.co/convaiinnovations/laya) (Apache-2.0) and the Elastic Stack, which this project uses under the self-generated 30-day trial license. Models called through OpenRouter are subject to their providers' terms.
